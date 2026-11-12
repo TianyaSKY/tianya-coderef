@@ -1,0 +1,80 @@
+{
+  "name": "tianya-coderef",
+  "displayName": "Tianya CodeRef",
+  "description": "复制光标行的代码引用，以及该行的红色错误。",
+  "version": "0.1.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TianyaSKY/tianya-coderef.git"
+  },
+  "publisher": "TianyaSKY",
+  "icon": "icon.png",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:coderef.copyCodeCitation",
+    "onCommand:coderef.copyDiagnosticCitation"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "coderef.copyCodeCitation",
+        "title": "复制代码引用",
+        "category": "CodeRef"
+      },
+      {
+        "command": "coderef.copyDiagnosticCitation",
+        "title": "复制诊断引用",
+        "category": "CodeRef"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "coderef.copyCodeCitation",
+        "key": "ctrl+shift+c",
+        "mac": "cmd+shift+c",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "coderef.copyDiagnosticCitation",
+        "key": "ctrl+shift+x",
+        "mac": "cmd+shift+x",
+        "when": "editorTextFocus"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "coderef.copyCodeCitation",
+          "when": "editorTextFocus",
+          "group": "9_cutcopypaste@20"
+        },
+        {
+          "command": "coderef.copyDiagnosticCitation",
+          "when": "editorTextFocus",
+          "group": "9_cutcopypaste@21"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "tsc -p ./ && node --test out/citation.test.js",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.6.0",
+    "@vscode/vsce": "^3.6.0"
+  }
+}
