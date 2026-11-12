@@ -2,7 +2,7 @@
   "name": "tianya-coderef",
   "displayName": "Tianya CodeRef",
   "description": "复制光标行的代码引用，以及该行的红色错误。",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "repository": {
     "type": "git",
