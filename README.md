@@ -1,12 +1,12 @@
 <p align="center">
-  <img src="icon.png" width="128" height="128" alt="CodeRef logo" />
+  <img src="docs/icon-variant-link.png" width="128" height="128" alt="CodeRef logo" />
 </p>
 
 # CodeRef
 
 [English](README.en.md)
 
-把编辑器里的一行源码，或光标所在行上的红色错误，复制。
+复制编辑器中光标所在行或选中的多行源码的引用，或光标所在行上的红色错误。
 
 ![演示](docs/example.gif)
 
@@ -33,11 +33,16 @@
 fixtures/03_longterm_memory.py:17
 ```
 
-`.ipynb` 不用磁盘上的 JSON 行号，而用单元格坐标。`N` 是全部单元格（含 markdown）的 1-based 序号，`L` 是该单元格内的 1-based 行号：
+选中多行时，引用包含行范围，例如 `fixtures/persist_diagloge.py:7-8`。选区结束于下一行行首时，不包含该行。
+
+`.ipynb` 不用磁盘上的 JSON 行号，而用单元格坐标。`N` 是全部单元格（含 markdown）的 1-based 序号，`L` 是该单元格内的 1-based 行号；多行选区同样使用行范围：
 
 ```
 notes/demo.ipynb:cell3:17
+notes/demo.ipynb:cell3:17-18
 ```
+
+在笔记本中选中一个或多个完整单元格后，按复制代码引用快捷键，会按文档顺序为每个选中的单元格生成一行引用，包含该单元格的全部行。编辑单元格文本时，仍按文本选区或光标行生成引用。
 
 ## 诊断引用
 

@@ -5,8 +5,10 @@ import {
 	codeText,
 	copiedDiagnosticMessage,
 	ERROR_SEVERITY,
+	formatCodeCitation,
 	formatDiagnosticCitation,
 	formatFileLocation,
+	formatNotebookSelection,
 	formatNotebookLocation,
 	isIpynbPath,
 	joinDiagnosticCitations,
@@ -25,6 +27,36 @@ test('ipynb citation counts every cell from 1 and uses the cell line', () => {
 		formatNotebookLocation('memory/03_longterm_memory.ipynb', 2, 16),
 		'memory/03_longterm_memory.ipynb:cell3:17',
 	);
+});
+
+test('code citation covers selected lines, excluding an end at column zero', () => {
+	assert.equal(formatCodeCitation('fixtures/persist_diagloge.py', {
+		start: { line: 6, character: 2 }, end: { line: 7, character: 3 },
+	}), 'fixtures/persist_diagloge.py:7-8');
+	assert.equal(formatCodeCitation('fixtures/persist_diagloge.py', {
+		start: { line: 6, character: 0 }, end: { line: 8, character: 0 },
+	}), 'fixtures/persist_diagloge.py:7-8');
+	assert.equal(formatCodeCitation('file.py', {
+		start: { line: 6, character: 0 }, end: { line: 7, character: 0 },
+	}), 'file.py:7');
+	assert.equal(formatCodeCitation('file.py', {
+		start: { line: 6, character: 0 }, end: { line: 6, character: 0 },
+	}), 'file.py:7');
+	assert.equal(formatCodeCitation('notes.ipynb', {
+		start: { line: 6, character: 1 }, end: { line: 7, character: 1 },
+	}, 2), 'notes.ipynb:cell3:7-8');
+});
+
+test('notebook cell selections cite each selected cell in document order', () => {
+	const notebook = {
+		cellCount: 5,
+		cellAt: (index: number) => ({ document: { lineCount: [2, 1, 8, 5, 1][index] } }),
+	};
+	assert.equal(formatNotebookSelection('notes/demo.ipynb', [
+		{ start: 3, end: 4 }, { start: 2, end: 4 }, { start: 4, end: 5 },
+	], notebook), 'notes/demo.ipynb:cell3:1-8\nnotes/demo.ipynb:cell4:1-5\nnotes/demo.ipynb:cell5:1');
+	assert.equal(formatNotebookSelection('notes/demo.ipynb', [{ start: 1, end: 2 }], notebook),
+		'notes/demo.ipynb:cell2:1');
 });
 
 test('single-root path omits the workspace folder name', () => {

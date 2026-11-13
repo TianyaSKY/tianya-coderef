@@ -68,6 +68,39 @@ export function formatNotebookLocation(path: string, zeroBasedCellIndex: number,
 	return formatLocation(path, zeroBasedLine + 1, zeroBasedCellIndex + 1);
 }
 
+export function formatCodeCitation(
+	path: string,
+	selection: { start: { line: number; character: number }; end: { line: number; character: number } },
+	cellIndex?: number,
+): string {
+	const startLine = selection.start.line;
+	const endLine = selection.end.line > startLine && selection.end.character === 0
+		? selection.end.line - 1
+		: selection.end.line;
+	const location = cellIndex === undefined
+		? formatFileLocation(path, startLine)
+		: formatNotebookLocation(path, cellIndex, startLine);
+	return endLine > startLine ? `${location}-${endLine + 1}` : location;
+}
+
+export function formatNotebookSelection(
+	path: string,
+	ranges: readonly { start: number; end: number }[],
+	notebook: { cellCount: number; cellAt(index: number): { document: { lineCount: number } } },
+): string {
+	const indices = new Set<number>();
+	for (const range of ranges) {
+		for (let index = range.start; index < range.end && index < notebook.cellCount; index++) {
+			indices.add(index);
+		}
+	}
+	return [...indices].sort((a, b) => a - b).map((index) => {
+		const location = formatNotebookLocation(path, index, 0);
+		const lineCount = notebook.cellAt(index).document.lineCount;
+		return lineCount > 1 ? `${location}-${lineCount}` : location;
+	}).join('\n');
+}
+
 export function rangeOverlapsLine(startLine: number, endLine: number, endCharacter: number, line: number): boolean {
 	if (startLine > line || endLine < line) {
 		return false;

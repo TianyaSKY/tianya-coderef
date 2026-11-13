@@ -1,12 +1,12 @@
 <p align="center">
-  <img src="icon.png" width="128" height="128" alt="CodeRef logo" />
+  <img src="docs/icon-variant-link.png" width="128" height="128" alt="CodeRef logo" />
 </p>
 
 # CodeRef
 
 [中文](README.md)
 
-Copy one source line from the editor, or the red errors on the cursor's line.
+Copy a citation for the cursor's line or selected source lines, or copy the red errors on the cursor's line.
 
 ![Demo](docs/example.gif)
 
@@ -35,11 +35,16 @@ A normal file is a workspace-relative path plus a 1-based line number. One line,
 fixtures/03_longterm_memory.py:17
 ```
 
-`.ipynb` does not use the JSON line numbers on disk. It uses cell coordinates. `N` is the 1-based index of every cell (markdown included). `L` is the 1-based line inside that cell:
+For a multi-line selection, the citation includes a line range, for example `fixtures/persist_diagloge.py:7-8`. A selection ending at the start of the next line excludes that line.
+
+`.ipynb` does not use the JSON line numbers on disk. It uses cell coordinates. `N` is the 1-based index of every cell (markdown included). `L` is the 1-based line inside that cell. Multi-line selections use the same line-range notation:
 
 ```
 notes/demo.ipynb:cell3:17
+notes/demo.ipynb:cell3:17-18
 ```
+
+Select one or more whole notebook cells and use the copy code citation shortcut to generate one citation per selected cell, in document order, covering all lines in each cell. When editing cell text, the citation still follows the text selection or cursor line.
 
 ## Diagnostic citation
 

@@ -4,9 +4,11 @@ import {
 	codeText,
 	copiedDiagnosticMessage,
 	FAILURE_MS,
+	formatCodeCitation,
 	formatDiagnosticCitation,
 	formatFileLocation,
 	formatNotebookLocation,
+	formatNotebookSelection,
 	isIpynbPath,
 	joinDiagnosticCitations,
 	MSG,
@@ -16,7 +18,7 @@ import {
 
 export function activate(context: vscode.ExtensionContext): void {
 	context.subscriptions.push(
-		vscode.commands.registerCommand('coderef.copyCodeCitation', () => copyCodeCitation()),
+		vscode.commands.registerCommand('coderef.copyCodeCitation', (notebookCells?: boolean) => copyCodeCitation(notebookCells)),
 		vscode.commands.registerCommand('coderef.copyDiagnosticCitation', () => copyDiagnosticCitation()),
 	);
 }
@@ -96,13 +98,35 @@ function locationFor(found: Anchor, zeroBasedLine: number): string {
 	return formatFileLocation(found.path, zeroBasedLine);
 }
 
-async function copyCodeCitation(): Promise<void> {
+async function copyCodeCitation(notebookCells = false): Promise<void> {
+	const notebookEditor = vscode.window.activeNotebookEditor;
+	const textEditor = vscode.window.activeTextEditor;
+	const activeCell = textEditor && findCell(textEditor.document);
+	if (notebookEditor && (notebookCells || !textEditor || activeCell?.notebook === notebookEditor.notebook)) {
+		const ranges = notebookEditor.selections;
+		const selectedCells = new Set<number>();
+		for (const range of ranges) {
+			for (let index = range.start; index < range.end; index++) {
+				selectedCells.add(index);
+			}
+		}
+		if (selectedCells.size > 1 || ((notebookCells || !textEditor) && selectedCells.size > 0)) {
+			const uri = notebookEditor.notebook.uri;
+			const path = isIpynbPath(uri.fsPath) ? pathFor(uri) : undefined;
+			if (!path) {
+				fail(MSG.cannotCite);
+				return;
+			}
+			await copyText(formatNotebookSelection(path, ranges, notebookEditor.notebook), MSG.copiedCode);
+			return;
+		}
+	}
 	const found = anchor();
 	if (!found) {
 		fail(MSG.cannotCite);
 		return;
 	}
-	await copyText(locationFor(found, found.editor.selection.active.line), MSG.copiedCode);
+	await copyText(formatCodeCitation(found.path, found.editor.selection, found.cellIndex), MSG.copiedCode);
 }
 
 async function copyDiagnosticCitation(): Promise<void> {

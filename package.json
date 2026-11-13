@@ -9,7 +9,7 @@
     "url": "https://github.com/TianyaSKY/tianya-coderef.git"
   },
   "publisher": "TianyaSKY",
-  "icon": "icon.png",
+  "icon": "docs/icon-variant-link.png",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -40,6 +40,13 @@
         "key": "ctrl+shift+c",
         "mac": "cmd+shift+c",
         "when": "editorTextFocus"
+      },
+      {
+        "command": "coderef.copyCodeCitation",
+        "key": "ctrl+shift+c",
+        "mac": "cmd+shift+c",
+        "when": "notebookEditorFocused && !editorTextFocus",
+        "args": true
       },
       {
         "command": "coderef.copyDiagnosticCitation",
